@@ -167,8 +167,41 @@ const NavBar = () => {
                     <button className='btn w-fit btn-sm sm:hidden'
                         onClick={() => setMenuOpen(!menuOpen)}>
                         <X className='w-4' />
-
                     </button>
+                    <div className="dropdown dropdown-start " >
+
+                        {/* <div tabIndex={0} className="btn m-1 rounded-full w-10 h-10">
+                            <User width={8} height={8}/>
+                        </div> */}
+                        {session && (
+                            <button tabIndex={0} className="btn btn-sm btn-accent btn-circle">
+                                <User className='w-4 h-4' />
+                            </button>
+                        )}
+                        <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm -left-36">
+
+                            <li>
+                                <button
+                                    onClick={() => signOut({ callbackUrl: "/login" })}
+                                    className="text-red-600"
+                                >
+                                    <LogOut className='w-4 h-4' />
+                                     Se déconnecter
+                                </button>
+                            </li>
+
+                            <li>
+                                <button
+                                    onClick={() => signOut({ callbackUrl: "/login" })}
+                                    
+                                >
+                                    <Settings className='w-4 h-4' />
+                                     Paramettre
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
                 {renderLinks("btn")}
 
