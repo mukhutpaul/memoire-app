@@ -83,7 +83,7 @@ const NavBar = () => {
 
         return (
             <>
-                <button className="btn btn-sm btn-accent btn-circle"
+                <button className="btn btn-sm btn-accent btn-circle hidden md:flex"
                     onClick={() => (document.getElementById('my_modal_3') as HTMLDialogElement).showModal()}>
                     <Settings className='w-4 h-4' />
                 </button>
@@ -145,7 +145,7 @@ const NavBar = () => {
                                 <User className='w-4 h-4' />
                                 {session?.user?.email}
                             </a></li>
-                             <li><a>
+                            <li><a>
                                 <Settings className='w-4 h-4' />
                                 Paramettre
                             </a></li>
@@ -169,35 +169,39 @@ const NavBar = () => {
             <div className={`absolute top-0 w-full bg-base-100 h-screen flex flex-col gap-2 p-4 
         transition-all duration-300 sm:hidden z-50 ${menuOpen ? "left-0" : "-left-full"}`}>
                 <div className='flex justify-between'>
-
-                    <button className='btn w-fit btn-sm sm:hidden'
-                        onClick={() => setMenuOpen(!menuOpen)}>
-                        <X className='w-4' />
-                    </button>
+                    <div className='gap-2'>
+                        <button className='btn w-fit btn-sm sm:hidden'
+                            onClick={() => setMenuOpen(!menuOpen)}>
+                            <X className='w-4' />
+                        </button>
+                    </div>
                     <div className="dropdown dropdown-start " >
 
                         {/* <div tabIndex={0} className="btn m-1 rounded-full w-10 h-10">
                             <User width={8} height={8}/>
                         </div> */}
                         {session && (
-                            <button tabIndex={0} className="btn btn-sm btn-accent btn-circle">
-                                <User className='w-4 h-4' />
-                            </button>
+                            <div className='flex gap-2'>
+                                
+                                <button className="btn btn-sm btn-accent btn-circle">
+                                    <Settings className='w-4 h-4' />
+                                </button>
+                                <button tabIndex={0} className="btn btn-sm btn-accent btn-circle">
+                                    <User className='w-4 h-4' />
+                                </button>
+                            </div>
                         )}
                         <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm -left-36">
 
                             <li>
-                                <button
-
-
-                                >
+                                <button>
                                     <User className='w-4 h-4' />
                                     {session?.user?.email}
                                 </button>
                             </li>
                             <li>
                                 <button
-                                   
+
 
                                 >
                                     <Settings className='w-4 h-4' />
@@ -205,7 +209,7 @@ const NavBar = () => {
                                 </button>
                             </li>
 
-                               <li>
+                            <li>
                                 <button
                                     onClick={() => signOut({ callbackUrl: "/login" })}
                                     className="text-red-600"
