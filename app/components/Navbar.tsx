@@ -1,11 +1,13 @@
 "use client"
 import { UserButton, useUser } from '@clerk/nextjs'
-import { AudioWaveform, GlobeLock, Menu, Settings, User, X } from 'lucide-react'
+import { AudioWaveform, GlobeLock, LogOut, Menu, Settings, User, X } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import ThemeSwitcher from './ThemeSwitcher'
+import { usePathname } from "next/navigation";
 
 import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Image from 'next/image'
 
 
@@ -14,6 +16,7 @@ const NavBar = () => {
     const [menuOpen, setMenuOpen] = useState(false)
     const [pageName, setPageName] = useState<string | null>(null)
     const { data: session } = useSession();
+    const pathname = usePathname();
 
     type Role = "ADMIN" | "USER";
     type NavLink = {
@@ -23,7 +26,9 @@ const NavBar = () => {
         roles?: Role[];
     };
 
+
     const navLinks: NavLink[] = [
+
         { href: "/", label: "Accueil" },
 
         {
@@ -49,6 +54,8 @@ const NavBar = () => {
     ]
 
     const filteredLinks = navLinks.filter((link) => {
+
+
         // Lien public
         if (!link.auth) return true;
 
@@ -63,8 +70,17 @@ const NavBar = () => {
         return true;
     });
 
+    const isActiveLink = (href: string) => {
+        if (href === "/") {
+            return pathname === "/";
+        }
+        return pathname.startsWith(href);
+    };
 
-    const renderLinks = (className: string) => {
+
+    const renderLinks = (className: string, href: string) => {
+
+
         return (
             <>
                 <button className="btn btn-sm btn-accent btn-circle"
@@ -73,7 +89,8 @@ const NavBar = () => {
                 </button>
                 {
                     filteredLinks.map(({ href, label }) => (
-                        <Link key={href} href={href} className={`${className} btn-sm`}>
+
+                        <Link key={href} href={href} className={`${className} ${isActiveLink(href) ? "btn-accent text-white" : ""} btn-sm`}>
                             {label}
                         </Link>
 
@@ -112,13 +129,31 @@ const NavBar = () => {
                 <div className='space-x-2 flex items-center hidden sm:flex'>
                     {renderLinks("btn rounded-xl")}
 
-                    <div className="dropdown dropdown-start">
-                        <div tabIndex={0} className="btn m-1 bg-gray-300 rounded-full w-10 h-10">
-                            <User className='w-10 h10'/>
-                        </div>
+                    <div className="dropdown dropdown-start " >
+
+                        {/* <div tabIndex={0} className="btn m-1 rounded-full w-10 h-10">
+                            <User width={8} height={8}/>
+                        </div> */}
+                        {session && (
+                            <button tabIndex={0} className="btn btn-sm btn-accent btn-circle">
+                                <User className='w-4 h-4' />
+                            </button>
+                        )}
                         <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                            <li><a>Item 1</a></li>
-                            <li><a>Item 2</a></li>
+
+                            <li><a>
+                                <Settings className='w-4 h-4' /> Parametre
+                            </a></li>
+
+                            <li>
+                                <button
+                                    onClick={() => signOut({ callbackUrl: "/login" })}
+                                    className="text-red-600"
+                                >
+                                    <LogOut className='w-4 h-4' />
+                                    Se déconnecter
+                                </button>
+                            </li>
                         </ul>
                     </div>
 
