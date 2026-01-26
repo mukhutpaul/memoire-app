@@ -1,6 +1,6 @@
 "use client"
 import { UserButton, useUser } from '@clerk/nextjs'
-import { AudioWaveform, GlobeLock, LogOut, Menu, Settings, User, X } from 'lucide-react'
+import { AudioWaveform, GlobeLock, LogOut, Menu, Server, Settings, User, X } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import ThemeSwitcher from './ThemeSwitcher'
@@ -142,7 +142,12 @@ const NavBar = () => {
                         <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
 
                             <li><a>
-                                <Settings className='w-4 h-4' /> Parametre
+                                <User className='w-4 h-4' />
+                                {session?.user?.email}
+                            </a></li>
+                             <li><a>
+                                <Settings className='w-4 h-4' />
+                                Paramettre
                             </a></li>
 
                             <li>
@@ -154,6 +159,7 @@ const NavBar = () => {
                                     Se déconnecter
                                 </button>
                             </li>
+
                         </ul>
                     </div>
 
@@ -182,23 +188,34 @@ const NavBar = () => {
 
                             <li>
                                 <button
+
+
+                                >
+                                    <User className='w-4 h-4' />
+                                    {session?.user?.email}
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                   
+
+                                >
+                                    <Settings className='w-4 h-4' />
+                                    Paramettre
+                                </button>
+                            </li>
+
+                               <li>
+                                <button
                                     onClick={() => signOut({ callbackUrl: "/login" })}
                                     className="text-red-600"
                                 >
                                     <LogOut className='w-4 h-4' />
-                                     Se déconnecter
+                                    Se déconnecter
                                 </button>
                             </li>
 
-                            <li>
-                                <button
-                                    onClick={() => signOut({ callbackUrl: "/login" })}
-                                    
-                                >
-                                    <Settings className='w-4 h-4' />
-                                     Paramettre
-                                </button>
-                            </li>
+
                         </ul>
                     </div>
 
