@@ -10,6 +10,7 @@ import {
   UserButton,
 } from '@clerk/nextjs'
 import ThemeSwitcher from "./components/ThemeSwitcher";
+import Providers from "./providers";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,14 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+ 
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
+         <Providers>{children}</Providers>
         </body>
       </html>
-    </ClerkProvider>
+
   );
 }

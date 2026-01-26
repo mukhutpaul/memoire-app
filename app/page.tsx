@@ -1,15 +1,24 @@
-import { UserButton } from "@clerk/nextjs";
-import Image from "next/image";
+"use client"
+
 import Link from "next/link";
 import Navbar from "./components/Navbar";
+import { useSession } from "next-auth/react";
+
+
 
 export default function Home() {
+  const { data: session } = useSession();
   return (
     <div>
-       <Navbar />
-       
+      <Navbar />
+
       <div className="flex items-center justify-between flex-col py-10 w-full">
-       
+        {/* <div className="tooltip">
+          <div className="tooltip-content">
+            <div className="animate-bounce text-orange-400 -rotate-10 text-2xl font-black">Excellent travail</div>
+          </div>
+          <button className="btn">Hover me</button>
+        </div> */}
         <div>
           <div className="flex flex-col">
             <h1 className="text-4xl md:text-5xl font-bold text-center">
@@ -22,10 +31,12 @@ export default function Home() {
             </p>
 
             <div className="flex justify-center items-center">
-              <Link href={"/sign-in"}
-                className="btn btn-sm md:btn-md btn-outline btn-accent">
-                Se connecter
-              </Link>
+              {!session && (
+                <Link href={"/login"}
+                  className="btn btn-sm md:btn-md btn-outline btn-accent">
+                  Se connecter
+                </Link>
+              )}
               <Link href={"/sign-up"}
                 className="btn btn-sm md:btn-md ml-2 btn-accent">
                 S'inscrire
