@@ -13,7 +13,7 @@ export default function Calendar() {
         height="auto"
         events={[
           { title: 'Réunion', date: '2026-01-10' },
-          { title: 'Deadline', date: '2026-01-15' },
+          { title: 'Meeting équipe', date: '2026-01-15' },
         ]}
       />
     </div>

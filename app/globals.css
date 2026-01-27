@@ -10,7 +10,7 @@
 }
 
 .fc-toolbar-title {
-  @apply text-xl font-bold;
+  @apply text-sm font-bold;
 }
 
 .fc-button {
@@ -18,7 +18,7 @@
 }
 
 .fc-day-today {
-  @apply bg-base-200;
+  @apply bg-accent;
 }
 
 
