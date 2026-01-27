@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Navbar from "./components/Navbar";
 import { useSession } from "next-auth/react";
+import Calendar from "./components/Calendar";
 
 
 
@@ -42,8 +43,12 @@ export default function Home() {
                 S'inscrire
               </Link>
             </div>
+
           </div>
         </div>
+
+        <Calendar />
+
       </div>
     </div>
   );

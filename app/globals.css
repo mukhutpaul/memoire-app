@@ -3,3 +3,22 @@
 @plugin "daisyui" {
    themes:all;
  }
+
+
+.fc {
+  @apply text-base-content;
+}
+
+.fc-toolbar-title {
+  @apply text-xl font-bold;
+}
+
+.fc-button {
+  @apply btn btn-sm btn-outline;
+}
+
+.fc-day-today {
+  @apply bg-base-200;
+}
+
+
