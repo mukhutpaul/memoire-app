@@ -1,16 +1,23 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
-import ClientOnly from './ClientOnly'
 import EmojiPicker from 'emoji-picker-react'
 import 'react-quill-new/dist/quill.snow.css'
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
 
 export default function Editeur() {
-  const quillRef = useRef<any>(null)
+  const [mounted, setMounted] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
+  const quillRef = useRef<any>(null)
+
+  useEffect(() => {
+    // ⚡ Only run on client
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null // pas de rendu côté serveur
 
   const modules = {
     toolbar: [
@@ -36,41 +43,36 @@ export default function Editeur() {
     quill.setSelection(range.index + emojiObject.emoji.length)
   }
 
+  const handlePublish = () => {
+    if (!quillRef.current) return
+    const quill = quillRef.current.getEditor()
+    console.log(quill.root.innerHTML)
+  }
+
   return (
-    <ClientOnly>
-      <div className="card bg-base-100 shadow-xl p-4 space-y-4 relative">
-        <button
-          className="btn btn-sm"
-          onClick={() => setShowPicker(!showPicker)}
-        >
-          😄 Emoji
-        </button>
+    <div className="card bg-base-100 shadow-xl p-4 space-y-4 relative">
+      <button className="btn btn-sm" onClick={() => setShowPicker(!showPicker)}>
+        😄 Emoji
+      </button>
 
-        {showPicker && (
-          <div className="absolute z-50">
-            <EmojiPicker onEmojiClick={addEmoji} />
-          </div>
-        )}
+      {showPicker && (
+        <div className="absolute z-50">
+          <EmojiPicker onEmojiClick={addEmoji} />
+        </div>
+      )}
 
-        <ReactQuill
-          ref={quillRef}
-          theme="snow"
-          defaultValue=""
-          modules={modules}
-          formats={formats}
-          placeholder="Écris ton annonce ici…"
-        />
+      <ReactQuill
+        ref={quillRef as any} // TS workaround
+        theme="snow"
+        defaultValue=""
+        modules={modules}
+        formats={formats}
+        placeholder="Écris ton annonce ici…"
+      />
 
-        <button
-          className="btn btn-accent mt-4"
-          onClick={() => {
-            const quill = quillRef.current.getEditor()
-            console.log(quill.getText())
-          }}
-        >
-          Publier
-        </button>
-      </div>
-    </ClientOnly>
+      <button className="btn btn-accent mt-4" onClick={handlePublish}>
+        Publier
+      </button>
+    </div>
   )
 }
