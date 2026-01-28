@@ -3,6 +3,7 @@
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import frLocale from '@fullcalendar/core/locales/fr'
 
 export default function Calendar() {
   return (
@@ -11,7 +12,9 @@ export default function Calendar() {
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         height="auto"
+        locale={frLocale}
         events={[
+         
           { title: 'Réunion', date: '2026-01-10' },
           { title: 'Meeting équipe', date: '2026-01-15' },
         ]}
