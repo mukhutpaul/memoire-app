@@ -32,15 +32,15 @@ const NavBar = () => {
         { href: "/", label: "Accueil" },
 
         {
-            href: "/services",
-            label: "Vos services",
+            href: "/communiques",
+            label: "Annonces",
             auth: true,
             roles: ["USER", "ADMIN"],
         },
 
         {
-            href: "/post_list",
-            label: "Vos postes",
+            href: "/evenement",
+            label: "Evenements",
             auth: true,
             roles: ["USER", "ADMIN"],
         },

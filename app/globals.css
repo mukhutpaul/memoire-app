@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 @plugin "daisyui" {
    themes:all;
  }
@@ -19,6 +20,19 @@
 
 .fc-day-today {
   @apply bg-accent;
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg)
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+.wiggle-animation{
+  animation: wiggle 1.5s ease-in-out infinite;
 }
 
 
