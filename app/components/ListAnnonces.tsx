@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchAnnoncesFromDB } from "../actions";
+import { Edit2, Trash2 } from "lucide-react"; // <-- import icônes
 
 interface Annonce {
   id: number;
@@ -25,12 +26,11 @@ export default function AnnonceList() {
       try {
         const dataFromDB = await fetchAnnoncesFromDB();
 
-        // Transformer les données côté client pour éviter le mismatch SSR
         const formattedData: Annonce[] = dataFromDB.map((a) => ({
           id: a.id,
           title: a.title,
           content: a.content,
-          createdAt: new Date(a.createdAt).toISOString(), // uniforme pour SSR/Client
+          createdAt: new Date(a.createdAt).toISOString(),
           user: {
             id: a.user.id,
             name: a.user.name || "Utilisateur inconnu",
@@ -47,7 +47,6 @@ export default function AnnonceList() {
     }
 
     fetchAnnonces();
-
     return () => {
       isMounted = false;
     };
@@ -58,20 +57,48 @@ export default function AnnonceList() {
   if (annonces.length === 0)
     return <p className="text-center p-4">Aucune annonce disponible</p>;
 
+  const handleEdit = (id: number) => {
+    console.log("Modifier annonce ID:", id);
+    // ici tu peux rediriger vers une page d'édition ou ouvrir un modal
+  };
+
+  const handleDelete = (id: number) => {
+    console.log("Supprimer annonce ID:", id);
+    // ici tu peux appeler ton action de suppression
+  };
+
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 p-4">
       {annonces.map((annonce) => (
         <div key={annonce.id} className="card bg-base-200 shadow-md">
           <div className="card-body">
-            <h2 className="card-title text-lg font-bold break-words">
-              {annonce.title}
-            </h2>
+            <div className="flex justify-between items-start">
+              <h2 className="card-title text-lg font-bold break-words">
+                {annonce.title}
+              </h2>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleEdit(annonce.id)}
+                  className="btn btn-ghost btn-sm p-1"
+                  title="Modifier"
+                >
+                  <Edit2 size={18} />
+                </button>
+                <button
+                  onClick={() => handleDelete(annonce.id)}
+                  className="btn btn-ghost btn-sm p-1"
+                  title="Supprimer"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+
             <p className="text-sm text-gray-500 mb-2 break-words">
               Par {annonce.user.name} le{" "}
               {new Date(annonce.createdAt).toLocaleDateString("fr-FR")}
             </p>
 
-            {/* Contenu HTML corrigé pour éviter les débordements */}
             <div
               className="prose max-w-full break-words overflow-x-auto [&>img]:max-w-full [&>img]:h-auto"
               dangerouslySetInnerHTML={{ __html: annonce.content }}
