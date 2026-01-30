@@ -53,7 +53,8 @@ export default function AnnonceList() {
     };
   }, []);
 
-  if (loading) return null; // rien côté serveur pour éviter le mismatch
+  if (loading)
+    return <p className="text-center p-4">Chargement des annonces...</p>;
   if (annonces.length === 0)
     return <p className="text-center p-4">Aucune annonce disponible</p>;
 
@@ -62,13 +63,17 @@ export default function AnnonceList() {
       {annonces.map((annonce) => (
         <div key={annonce.id} className="card bg-base-200 shadow-md">
           <div className="card-body">
-            <h2 className="card-title text-lg font-bold">{annonce.title}</h2>
-            <p className="text-sm text-gray-500 mb-2">
+            <h2 className="card-title text-lg font-bold break-words">
+              {annonce.title}
+            </h2>
+            <p className="text-sm text-gray-500 mb-2 break-words">
               Par {annonce.user.name} le{" "}
               {new Date(annonce.createdAt).toLocaleDateString("fr-FR")}
             </p>
+
+            {/* Contenu HTML corrigé pour éviter les débordements */}
             <div
-              className="prose max-w-full"
+              className="prose max-w-full break-words overflow-x-auto [&>img]:max-w-full [&>img]:h-auto"
               dangerouslySetInnerHTML={{ __html: annonce.content }}
             ></div>
           </div>
