@@ -9,7 +9,7 @@ function page() {
             Moi
         </div>
         <div className="w-3/4">
-            <AnnouncementEditor />
+         jdjdj
         </div>
     </div>
   )

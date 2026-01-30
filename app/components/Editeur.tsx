@@ -1,78 +1,67 @@
-'use client'
+// "use client";
 
-import React, { useEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
-import EmojiPicker from 'emoji-picker-react'
-import 'react-quill-new/dist/quill.snow.css'
+import { useState } from "react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import "quill-emoji/dist/quill-emoji.css";
+import { createAnnonce } from "../actions";
 
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
 
-export default function Editeur() {
-  const [mounted, setMounted] = useState(false)
-  const [showPicker, setShowPicker] = useState(false)
-  const quillRef = useRef<any>(null)
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "emoji"],
+    ["clean"],
+  ],
+  "emoji-toolbar": true,
+  "emoji-shortname": true,
+};
 
-  useEffect(() => {
-    // ⚡ Only run on client
-    setMounted(true)
-  }, [])
+interface Props {
+  userId: string;
+}
 
-  if (!mounted) return null // pas de rendu côté serveur
+export default function AnnonceForm({ userId }: Props) {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      ['link', 'image'],
-      ['clean'],
-    ],
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline',
-    'list', 'link', 'image',
-  ]
-
-  const addEmoji = (emojiObject: { emoji: string }) => {
-    if (!quillRef.current) return
-    const quill = quillRef.current.getEditor()
-    const range = quill.getSelection(true)
-    quill.insertText(range.index, emojiObject.emoji, 'user')
-    quill.setSelection(range.index + emojiObject.emoji.length)
-  }
-
-  const handlePublish = () => {
-    if (!quillRef.current) return
-    const quill = quillRef.current.getEditor()
-    console.log(quill.root.innerHTML)
-  }
+    try {
+      await createAnnonce(title, content, userId);
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="card bg-base-100 shadow-xl p-4 space-y-4 relative">
-      <button className="btn btn-sm" onClick={() => setShowPicker(!showPicker)}>
-        😄 Emoji
-      </button>
-
-      {showPicker && (
-        <div className="absolute z-50">
-          <EmojiPicker onEmojiClick={addEmoji} />
-        </div>
-      )}
-
-      <ReactQuill
-        ref={quillRef as any} // TS workaround
-        theme="snow"
-        defaultValue=""
-        modules={modules}
-        formats={formats}
-        placeholder="Écris ton annonce ici…"
+    <form onSubmit={handleSubmit} className="card bg-base-200 p-6 space-y-4">
+      <input
+        className="input input-bordered w-full"
+        placeholder="Titre"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
       />
 
-      <button className="btn btn-accent mt-4" onClick={handlePublish}>
-        Publier
+      <ReactQuill
+        value={content}
+        onChange={setContent}
+        modules={modules}
+        placeholder="Contenu de l'annonce..."
+      />
+
+      <button className="btn btn-accent" disabled={loading}>
+        {loading ? <span className="loading loading-ring loading-sm"></span> : "Publier"}
       </button>
-    </div>
-  )
+    </form>
+  );
 }
