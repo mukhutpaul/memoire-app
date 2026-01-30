@@ -1,15 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite" // ou mysql / sqlite
+  provider = "sqlite" // ou mysql / postgres
   url      = env("DATABASE_URL")
 }
-
 
 enum Role {
   USER
@@ -24,7 +21,9 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
 
-    annonces  Annonce[] // relation avec Annonce
+  annonces          Annonce[]             @relation("CreatorAnnonces")
+  events            Event[]               @relation("CreatorEvents")
+  participations    EventParticipant[]    @relation("UserParticipations")
 }
 
 model Annonce {
@@ -32,7 +31,36 @@ model Annonce {
   title     String
   content   String
   createdAt DateTime @default(now())
-
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation("CreatorAnnonces", fields: [userId], references: [id])
+}
+
+model Event {
+  id           String             @id @default(uuid())
+  title        String
+  description  String
+  dateStart    DateTime
+  dateEnd      DateTime
+  location     String?
+  creatorId    String
+  creator      User               @relation("CreatorEvents", fields: [creatorId], references: [id])
+  participants EventParticipant[] // liste des participants
+  createdAt    DateTime           @default(now())
+
+  // Simple champ pour stocker un id d'annonce sans relation Prisma
+  annonceId    Int?
+}
+
+model EventParticipant {
+  id       String    @id @default(uuid())
+  eventId  String
+  userId   String
+  status   String    @default("invited")
+  joinedAt DateTime?
+
+  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation("UserParticipations", fields: [userId], references: [id])
+
+  // Garde seulement l'id si nécessaire, pas de relation inverse
+  annonceId Int?
 }
