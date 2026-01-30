@@ -1,6 +1,6 @@
 "use client"
 import AnnouncementEditor from "@/app/components/Editeur"
-import LectureAn from "@/app/components/LectureAnnonces";
+import LectureAn from "@/app/components/ListAnnonces";
 import { User } from "lucide-react"
 import { useSession } from "next-auth/react";
 
@@ -24,7 +24,7 @@ function page() {
         </div>
       </div>
       <div className="w-3/4">
-      <LectureAn />
+      {/* <LectureAn /> */}
       {session?.user?.id && (
         <AnnouncementEditor userId={session?.user?.id} />
       )}

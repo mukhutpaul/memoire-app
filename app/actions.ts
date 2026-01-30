@@ -2,17 +2,19 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-export async function AfficherAnnonces() {
 
-    try {
-        const annoncesFromDB = await prisma.annonce.findMany({
-            include: { user: { select: { id: true, name: true } } },
-            orderBy: { createdAt: "desc" },
-        })
-        } catch (error) {
-            console.error("Erreur d'Affichage des annonces", error);
-        }
-    }
+export async function fetchAnnoncesFromDB(){
+  try {
+    const annoncesFromDB = await prisma.annonce.findMany({
+      include: { user: { select: { id: true, name: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+    return annoncesFromDB; // <--- Très important
+  } catch (error) {
+    console.error("Erreur d'affichage des annonces", error);
+    return []; // toujours retourner un tableau
+  }
+}
 
 export async function createAnnonce(
   title: string,

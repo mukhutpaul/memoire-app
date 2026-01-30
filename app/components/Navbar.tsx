@@ -32,14 +32,14 @@ const NavBar = () => {
         { href: "/", label: "Accueil" },
 
         {
-            href: "/communiques",
+            href: "/annonces",
             label: "Annonces",
             auth: true,
             roles: ["USER", "ADMIN"],
         },
 
         {
-            href: "/evenement",
+            href: "/evenements",
             label: "Evenements",
             auth: true,
             roles: ["USER", "ADMIN"],
