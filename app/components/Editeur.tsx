@@ -61,6 +61,7 @@ export default function Editeur({ userId }: Props) {
         ["bold", "italic", "underline"],
         [{ list: "ordered" }, { list: "bullet" }],
         ["link", "image"],
+        [{ align: [] }], // <-- gauche, centre, droite, justification
         ["clean"],
       ],
       handlers: { image: imageHandler },
@@ -124,7 +125,7 @@ export default function Editeur({ userId }: Props) {
 
         <ReactQuill
           ref={quillRef}
-          defaultValue="" // NE PAS UTILISER `value` !!
+          defaultValue="" // NE PAS UTILISER `value` pour éviter reset
           modules={modules}
           placeholder="Contenu de l'annonce..."
         />
