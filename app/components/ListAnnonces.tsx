@@ -99,6 +99,8 @@ export default function AnnonceList({ userId }: { userId: string }) {
     };
   }, [userId, canPlaySound]);
 
+  
+
   // Activer notifications
   const handleEnableNotifications = async () => {
     setCanPlaySound(true);
