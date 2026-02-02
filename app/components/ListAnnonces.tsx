@@ -26,7 +26,7 @@ export default function AnnonceList({ userId }: { userId: string }) {
 
   // Précharger le son
   useEffect(() => {
-    const audio = new Audio("/Sonnerie2.mp3");
+    const audio = new Audio("/Sonnerie.mp3");
     audio.preload = "auto";
     notificationSound.current = audio;
   }, []);
