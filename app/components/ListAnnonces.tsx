@@ -6,6 +6,7 @@ import { Edit2, Trash2 } from "lucide-react";
 import Pusher from "pusher-js";
 import { toast } from "react-toastify";
 
+
 interface Annonce {
   id: number;
   title: string;
@@ -114,6 +115,24 @@ export default function AnnonceList({ userId }: { userId: string }) {
     notificationSound.current?.play().catch(() => {});
     toast.success("Notifications activées !");
   };
+
+  useEffect(() => {
+  if (!("Notification" in window)) return
+
+  Notification.requestPermission().then(async (permission) => {
+    if (permission === "granted") {
+      const token = await requestFcmToken()
+
+      if (token) {
+        await fetch("/api/save-fcm-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        })
+      }
+    }
+  })
+}, [])
 
   if (loading)
     return <p className="text-center p-4">Chargement des annonces...</p>;

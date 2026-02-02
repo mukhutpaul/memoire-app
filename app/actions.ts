@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function fetchAnnoncesFromDB(){
+export async function fetchAnnoncesFromDB() {
   try {
     const annoncesFromDB = await prisma.annonce.findMany({
       include: { user: { select: { id: true, name: true } } },
@@ -37,6 +37,9 @@ export async function createAnnonce(
       },
     },
   });
+
+
+
 
   // Revalidation si tu affiches une liste
   revalidatePath("/");
