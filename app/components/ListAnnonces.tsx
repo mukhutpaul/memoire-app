@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { fetchAnnoncesFromDB } from "../actions";
+import { fetchAnnoncesFromDB, markAnnoncesAsRead } from "../actions";
 import { Edit2, Trash2 } from "lucide-react";
 import Pusher from "pusher-js";
 import { toast } from "react-toastify";
-
 
 interface Annonce {
   id: number;
@@ -45,7 +44,15 @@ export default function AnnonceList({ userId }: { userId: string }) {
           createdAt: new Date(a.createdAt).toISOString(),
           user: a.user || { id: "unknown", name: "Utilisateur inconnu" },
         }));
-        if (isMounted) setAnnonces(formattedData);
+
+        if (isMounted) {
+          setAnnonces(formattedData);
+
+          // 🔔 Marquer toutes les annonces comme lues pour que la sonnette passe à 0
+          markAnnoncesAsRead(userId)
+            .then(() => console.log("Toutes les annonces marquées comme lues"))
+            .catch((err) => console.error("Erreur marquage lecture :", err));
+        }
       } catch (err) {
         console.error(err);
         if (isMounted) setAnnonces([]);
@@ -56,7 +63,7 @@ export default function AnnonceList({ userId }: { userId: string }) {
 
     fetchAnnonces();
     return () => { isMounted = false; };
-  }, []);
+  }, [userId]);
 
   // Pusher temps réel
   useEffect(() => {
@@ -100,8 +107,6 @@ export default function AnnonceList({ userId }: { userId: string }) {
     };
   }, [userId, canPlaySound]);
 
-  
-
   // Activer notifications
   const handleEnableNotifications = async () => {
     setCanPlaySound(true);
@@ -117,22 +122,22 @@ export default function AnnonceList({ userId }: { userId: string }) {
   };
 
   useEffect(() => {
-  if (!("Notification" in window)) return
+    if (!("Notification" in window)) return;
 
-  Notification.requestPermission().then(async (permission) => {
-    if (permission === "granted") {
-      const token = await requestFcmToken()
+    Notification.requestPermission().then(async (permission) => {
+      if (permission === "granted") {
+        const token = await requestFcmToken();
 
-      if (token) {
-        await fetch("/api/save-fcm-token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token }),
-        })
+        if (token) {
+          await fetch("/api/save-fcm-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+        }
       }
-    }
-  })
-}, [])
+    });
+  }, []);
 
   if (loading)
     return <p className="text-center p-4">Chargement des annonces...</p>;

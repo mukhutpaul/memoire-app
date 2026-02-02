@@ -21,18 +21,20 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
 
-  annonces          Annonce[]             @relation("CreatorAnnonces")
-  events            Event[]               @relation("CreatorEvents")
-  participations    EventParticipant[]    @relation("UserParticipations")
+  annonces       Annonce[]          @relation("CreatorAnnonces")
+  events         Event[]            @relation("CreatorEvents")
+  participations EventParticipant[] @relation("UserParticipations")
+  lectures       AnnonceLecture[]
 }
 
 model Annonce {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  userId    String
-  user      User     @relation("CreatorAnnonces", fields: [userId], references: [id])
+  id              Int              @id @default(autoincrement())
+  title           String
+  content         String
+  createdAt       DateTime         @default(now())
+  userId          String
+  user            User             @relation("CreatorAnnonces", fields: [userId], references: [id])
+  annonceLectures AnnonceLecture[]
 }
 
 model Event {
@@ -48,7 +50,7 @@ model Event {
   createdAt    DateTime           @default(now())
 
   // Simple champ pour stocker un id d'annonce sans relation Prisma
-  annonceId    Int?
+  annonceId Int?
 }
 
 model EventParticipant {
@@ -58,9 +60,22 @@ model EventParticipant {
   status   String    @default("invited")
   joinedAt DateTime?
 
-  event     Event    @relation(fields: [eventId], references: [id])
-  user      User     @relation("UserParticipations", fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+  user  User  @relation("UserParticipations", fields: [userId], references: [id])
 
   // Garde seulement l'id si nécessaire, pas de relation inverse
   annonceId Int?
+}
+
+model AnnonceLecture {
+  id        Int      @id @default(autoincrement())
+  annonceId Int
+  userId    String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  annonce Annonce @relation(fields: [annonceId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([annonceId, userId])
 }
