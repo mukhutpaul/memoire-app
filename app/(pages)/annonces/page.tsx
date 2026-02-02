@@ -7,15 +7,15 @@ import Link from "next/link"
 
 function page() {
   return (
-    <div className="py-4 px-4 mx-[10%] flex flex-col">
+    <div className="py-4 px-4 md:mx-[10%] flex flex-col gap-4">
        
-       <Link className="flex gap-1 btn btn-accent w-[20%] mx-4"
+       <Link className="flex gap-1 btn btn-accent w-[20%]"
        href={"/ajoutAnnonces"}
        >
         <Megaphone size={24}  />  <p className="hidden md:flex">Nouvelle annonce</p> 
        </Link>
         
-        <AnnonceList />
+        <AnnonceList userId={""} />
    
     </div>
   )

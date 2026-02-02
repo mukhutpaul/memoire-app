@@ -1,58 +1,65 @@
-"use client";
+"use client"
 
-import { useRef, useState } from "react";
-import dynamic from "next/dynamic";
-import "react-quill-new/dist/quill.snow.css";
-import EmojiPicker from "emoji-picker-react";
-import { createAnnonce } from "../actions";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import confetti from "canvas-confetti";
+import { useEffect, useRef, useState } from "react"
+import dynamic from "next/dynamic"
+import "react-quill-new/dist/quill.snow.css"
+import EmojiPicker from "emoji-picker-react"
+import { useRouter } from "next/navigation"
+import { toast } from "react-toastify"
+import confetti from "canvas-confetti"
 
-// Quill dynamiquement, pas de SSR
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
 
 interface Props {
-  userId: string;
+  userId: string
 }
 
 export default function Editeur({ userId }: Props) {
-  const [title, setTitle] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showEmoji, setShowEmoji] = useState(false);
-  const quillRef = useRef<any>(null);
-  const router = useRouter();
+  const [title, setTitle] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [showEmoji, setShowEmoji] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const quillRef = useRef<any>(null)
+  const router = useRouter()
 
-  // Insérer emoji
+  // Rendu uniquement côté client
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Insérer un emoji
   const insertEmoji = (emoji: string) => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-    const range = quill.getSelection(true) || { index: quill.getLength() };
-    quill.insertText(range.index, emoji);
-    quill.setSelection(range.index + emoji.length);
-    setShowEmoji(false);
-  };
+    const quill = quillRef.current?.getEditor()
+    if (!quill) return
 
-  // Ajouter image
+    const range = quill.getSelection(true) || { index: quill.getLength() }
+    quill.insertText(range.index, emoji)
+    quill.setSelection(range.index + emoji.length)
+    setShowEmoji(false)
+  }
+
+  // Ajouter une image
   const imageHandler = () => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.click();
+    const quill = quillRef.current?.getEditor()
+    if (!quill) return
+
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+    input.click()
 
     input.onchange = () => {
-      const file = input.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
+      const file = input.files?.[0]
+      if (!file) return
+
+      const reader = new FileReader()
       reader.onload = () => {
-        const range = quill.getSelection() || { index: quill.getLength() };
-        quill.insertEmbed(range.index, "image", reader.result);
-      };
-      reader.readAsDataURL(file);
-    };
-  };
+        const range = quill.getSelection() || { index: quill.getLength() }
+        quill.insertEmbed(range.index, "image", reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const modules = {
     toolbar: {
@@ -61,38 +68,48 @@ export default function Editeur({ userId }: Props) {
         ["bold", "italic", "underline"],
         [{ list: "ordered" }, { list: "bullet" }],
         ["link", "image"],
-        [{ align: [] }], // <-- gauche, centre, droite, justification
+        [{ align: [] }],
         ["clean"],
       ],
       handlers: { image: imageHandler },
     },
-  };
+  }
 
+  // Soumission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
+    e.preventDefault()
 
-    const content = quill.root.innerHTML;
+    const quill = quillRef.current?.getEditor()
+    if (!quill) return
+
+    const content = quill.root.innerHTML
     if (!title.trim() || content === "<p><br></p>") {
-      toast.error("Veuillez saisir un titre et un contenu !");
-      return;
+      toast.error("Veuillez saisir un titre et un contenu !")
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
     try {
-      await createAnnonce(title, content, userId);
-      setTitle("");
-      quill.setContents([]); // reset contenu
-      toast.success("Annonce publiée ✅");
-      confetti();
-      router.push("/annonces");
+      await fetch("/api/create-annonce", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content, userId }),
+      })
+
+      setTitle("")
+      quill.setContents([])
+      toast.success("Annonce publiée ✅")
+      confetti()
+
+      router.push("/annonces")
     } catch {
-      toast.error("Erreur d'enregistrement ❌");
+      toast.error("Erreur d'enregistrement ❌")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
+  if (!mounted) return null
 
   return (
     <div className="relative">
@@ -125,7 +142,6 @@ export default function Editeur({ userId }: Props) {
 
         <ReactQuill
           ref={quillRef}
-          defaultValue="" // NE PAS UTILISER `value` pour éviter reset
           modules={modules}
           placeholder="Contenu de l'annonce..."
         />
@@ -139,5 +155,5 @@ export default function Editeur({ userId }: Props) {
         </button>
       </form>
     </div>
-  );
+  )
 }
